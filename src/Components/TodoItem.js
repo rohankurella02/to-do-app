@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { MdDelete, MdEdit } from 'react-icons/md';
 import { useSelector, useDispatch } from 'react-redux'
-import { deleteTodo, editTodo } from '../slices/todoSlice';
+import { deleteTask, deleteTodo, editTodo, getTasks, updateTask } from '../slices/todoSlice';
 import toast from 'react-hot-toast';
 import TodoModal from './TodoModal';
 
@@ -22,7 +22,7 @@ function TodoItem({ todo }) {
 
     const handleDelete = () => {
         console.log("delete")
-        dispatch(deleteTodo(todo.id))
+        dispatch(deleteTask(todo.id))
         toast.success('Task Deleted Successfully')
 
     }
@@ -35,10 +35,13 @@ function TodoItem({ todo }) {
     const handleChecked = () => {
         console.log(checked)
         setChecked(!checked)
-        dispatch(editTodo(
+        dispatch(updateTask(
             {...todo,
             status: checked ? 'incomplete' : 'complete'}
         ))
+        setTimeout(() => {
+            dispatch(getTasks())
+        }, 1000);
     }
 
   return (

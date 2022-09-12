@@ -10,6 +10,7 @@ export const getTasks = createAsyncThunk(
             return response.data;
         }
         catch (err) {
+            toast.error('Error Occurred');
             return err.message;
         }
     }
@@ -23,6 +24,7 @@ export const insertTask = createAsyncThunk(
             return response.data;
         }
         catch (err) {
+            toast.error('Error Occurred');
             return err.message;
         }
     }
@@ -36,6 +38,7 @@ export const deleteTask = createAsyncThunk(
             return response.data;
         }
         catch (err) {
+            toast.error('Error Occurred');
             return err.message;
         }
     }
@@ -49,6 +52,7 @@ export const updateTask = createAsyncThunk(
             return response.data;
         }
         catch (err) {
+            toast.error('Error Occurred');
             return err.message;
         }
     }
@@ -69,7 +73,15 @@ const getInitialTodo = () => {
 const initialValue = {
     filterStatus: 'all',
     isLoading: false,
-    todoList: getInitialTodo(),
+    isGetLoading: false,
+    isGetSuccess: false,
+    isUpdateLoading: false,
+    isUpdateSuccess: false,
+    isInsertLoading: false,
+    isInsertSuccess: false,
+    isDeleteLoading: false,
+    isDeleteSuccess: false,
+    todoList: [],
 }
 
 export const todoSlice = createSlice({
@@ -127,31 +139,56 @@ export const todoSlice = createSlice({
     extraReducers: {
         [getTasks.fulfilled]: (state, action) => {
             state.todoList = action.payload;
-            state.isLoading = false;
+            // state.isLoading = false;
+            state.isGetLoading = false;
+            state.isGetSuccess = true;
         },
         [getTasks.pending]: (state, action) => {
-            state.isLoading = true;
+            state.isGetLoading = true;
+            state.isGetSuccess = false;
+        },
+        [getTasks.rejected]: (state, action) => {
+            state.isGetLoading = false;
+            state.isGetSuccess = false;
         },
         [insertTask.fulfilled]: (state, action) => {
             state.todoList.push(action.payload);
-            state.isLoading = false;
+            state.isInsertLoading = false;
+            state.isInsertSuccess = true;
         },
         [insertTask.pending]: (state, action) => {
-            state.isLoading = true;
+            state.isInsertLoading = true;
+            state.isInsertSuccess = false;
+        },
+        [insertTask.rejected]: (state, action) => {
+            state.isInsertLoading = false;
+            state.isInsertSuccess = false;
         },
         [deleteTask.fulfilled]: (state, action) => {
             state.todoList = state.todoList.filter(todo => todo.id !== action.payload);
-            state.isLoading = false;
+            state.isDeleteLoading = false;
+            state.isDeleteSuccess = true;
         },
         [deleteTask.pending]: (state, action) => {
-            state.isLoading = true;
+            state.isDeleteLoading = true;
+            state.isDeleteSuccess = false;
+        },
+        [deleteTask.rejected]: (state, action) => {
+            state.isDeleteLoading = false;
+            state.isDeleteSuccess = false;
         },
         [updateTask.fulfilled]: (state, action) => {
             state.todoList = state.todoList.map(todo => todo.id === action.payload.id ? action.payload : todo);
-            state.isLoading = false;
+            state.isUpdateLoading = false;
+            state.isUpdateSuccess = true;
         },
         [updateTask.pending]: (state, action) => {
-            state.isLoading = true;
+            state.isUpdateLoading = true;
+            state.isUpdateSuccess = false;
+        },
+        [updateTask.rejected]: (state, action) => {
+            state.isUpdateLoading = false;
+            state.isUpdateSuccess = false;
         }
     }
 })

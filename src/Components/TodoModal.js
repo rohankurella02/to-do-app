@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import '../../src/index.css'
 import { MdOutlineClose } from 'react-icons/md'
-import { useDispatch } from 'react-redux'
-import { addTodo, editTodo } from '../slices/todoSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { addTodo, editTodo, getTasks, insertTask, updateTask } from '../slices/todoSlice'
 import { v4 as uuid } from 'uuid'
 import toast from 'react-hot-toast';
 
@@ -13,37 +13,66 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }) {
 
     const dispatch = useDispatch()
 
+    const d = useSelector(state => state.todo)
+
     useEffect(() => {
         if (type === 'Edit') {
             setTitle(todo.title)
             setStatus(todo.status)
         }
+        
+        
     }, [modalOpen])
+
+    useEffect(() => {
+        if (d.isInsertSuccess) {
+            toast.success('Task Added Successfully')
+            setModalOpen(false)
+        }
+    }, [d.isInsertSuccess, d.isInsertLoading])
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (title === '') {
             toast.error('Please Enter a Task')
         }
-        console.log({ title, status })
+        console.log({ title, status, d })
         if (title && status) {
             if (type === 'Add') {
-                dispatch(addTodo({
+                // dispatch(addTodo({
+                //     id: uuid(),
+                //     title,
+                //     status,
+                //     time: new Date().toLocaleString()
+                // }))
+                dispatch(insertTask({
                     id: uuid(),
                     title,
                     status,
                     time: new Date().toLocaleString()
                 }))
-                toast.success('Task Added Successfully')
-                setModalOpen(false)
+                setTimeout(() => {
+                    dispatch(getTasks())
+                }, 1000);
+
+                if (d.isInsertSuccess) {
+                    toast.success('Task Added Successfully')
+                    setModalOpen(false)
+                }
+
+                
             }
             if (type === 'Edit') {
                 // console.log('edit')
-                dispatch(editTodo({
+                dispatch(updateTask({
                     ...todo,
                     title,
                     status
                 }))
+                setTimeout(() => {
+                    dispatch(getTasks())
+                }, 1000);
                 toast.success('Task Edited Successfully')
             }
 
@@ -69,6 +98,7 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }) {
                             <option value="complete">Complete</option>
                         </select>
                     </label>
+                    { d.isInsertLoading && <p>Adding Task...</p>}
                     <div className='button-modal'>
                         <button className='button' type='submit'>{type} Task</button>
                         <button onClick={() => setModalOpen(false)} className='button-2' type='button'>Cancel</button>
