@@ -6,7 +6,7 @@ export const getTasks = createAsyncThunk(
     'todo/getTasks',
     async () => {
         try {
-            const response = await axios.get('http://localhost:3001/getTasks');
+            const response = await axios.get('/getTasks');
             return response.data;
         }
         catch (err) {
@@ -20,7 +20,7 @@ export const insertTask = createAsyncThunk(
     'todo/insertTask',
     async (task) => {
         try {
-            const response = await axios.post('http://localhost:3001/insertTask', task);
+            const response = await axios.post('/insertTask', task);
             return response.data;
         }
         catch (err) {
@@ -34,7 +34,7 @@ export const deleteTask = createAsyncThunk(
     'todo/deleteTask',
     async (id) => {
         try {
-            const response = await axios.delete(`http://localhost:3001/deleteTask/${id}`);
+            const response = await axios.delete(`/deleteTask/${id}`);
             return response.data;
         }
         catch (err) {
@@ -48,7 +48,7 @@ export const updateTask = createAsyncThunk(
     'todo/updateTask',
     async (task) => {
         try {
-            const response = await axios.put(`http://localhost:3001/updateTask/${task.id}`, task);
+            const response = await axios.put(`/updateTask/${task.id}`, task);
             return response.data;
         }
         catch (err) {
@@ -61,12 +61,12 @@ export const updateTask = createAsyncThunk(
 
 const getInitialTodo = () => {
     const localTodoList = window.localStorage.getItem("todoList");
-    if(localTodoList) {
+    if (localTodoList) {
         return JSON.parse(localTodoList);
     }
     window.localStorage.setItem("todoList", JSON.stringify([]));
     return [];
-    
+
 }
 
 
@@ -93,7 +93,7 @@ export const todoSlice = createSlice({
 
             state.todoList.push(action.payload)
             const todoList = window.localStorage.getItem("todoList");
-            if(todoList) {
+            if (todoList) {
                 const todoListArr = JSON.parse(todoList);
                 todoListArr.push({
                     ...action.payload
@@ -101,29 +101,29 @@ export const todoSlice = createSlice({
                 window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
             }
             else {
-                window.localStorage.setItem("todoList", JSON.stringify([{ ...action.payload}]));
+                window.localStorage.setItem("todoList", JSON.stringify([{ ...action.payload }]));
             }
         },
         deleteTodo: (state, action) => {
             const todoList = window.localStorage.getItem("todoList");
-            if(todoList) {
+            if (todoList) {
                 const todoListArr = JSON.parse(todoList);
                 todoListArr.forEach((todo, index) => {
-                    if(todo.id === action.payload) {
+                    if (todo.id === action.payload) {
                         todoListArr.splice(index, 1);
                     }
                 })
                 window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
                 state.todoList = todoListArr;
             }
-            
+
         },
         editTodo: (state, action) => {
             const todoList = window.localStorage.getItem("todoList");
-            if(todoList) {
+            if (todoList) {
                 const todoListArr = JSON.parse(todoList);
                 todoListArr.forEach((todo, index) => {
-                    if(todo.id === action.payload.id) {
+                    if (todo.id === action.payload.id) {
                         todo.status = action.payload.status;
                         todo.title = action.payload.title;
                     }
